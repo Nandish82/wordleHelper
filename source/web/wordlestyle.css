@@ -1,0 +1,130 @@
+/*.rel {
+    display: flex;
+    flex-wrap: wrap;
+    border: 2px solid green;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 80px;
+    padding: 4px;
+    width: 305px;
+    min-width:305px;
+    min-height: 305px;
+    justify-content: center;
+    
+    
+  }*/
+  
+
+  html {
+    box-sizing:border-box;
+  }
+  *, *::before, *::after{
+    box-sizing: inherit;
+  }
+
+  .banner{
+    font-family: 'Roboto Serif', serif;
+    font-size: 40px;
+    display:fixed;
+    text-align: center;
+    margin-bottom:2px;
+  }
+  .rel {
+    display: grid;
+    width:270px;
+
+    border: 2px solid green;
+    margin-left:auto;
+    margin-right:auto;
+    margin-top:5px;
+    padding:4px;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr;
+
+  }
+  
+  .rel > .input {
+    border: 1px solid blue;
+    width: 50px;
+    height: 50px;
+    margin: 0px 0px 1px 1px;
+    padding: 2px;
+    text-align: center;
+    /*line-height: 50px;*/
+    font-size: 40px;
+    caret-color: transparent;
+    cursor: default;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    animation-name: none;
+    animation-duration: 1s;
+    animation-iteration-count: 2;
+  }
+
+  .input > *{
+    pointer-events: none;
+  }
+
+  .rel >.next-elem {
+    border: 1px solid rgba(255, 0, 0, 0.747);
+    width: 50px;
+    height: 50px;
+    margin: 0px 0px 1px 1px;
+    padding: 4px;
+    text-align: center;
+    /*line-height: 50px;*/
+    font-size: 40px;
+    caret-color: transparent;
+    cursor: default;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+
+  /*div:focus{
+    background-color: red;
+  }*/
+div:focus-visible {
+    outline: 4px dashed black;
+  }
+    
+  /* Focusing the button with a mouse, touch, or stylus will show a subtle drop shadow. */
+div:focus:not(:focus-visible) {
+    outline: none;
+    box-shadow: 1px 1px 5px rgba(1, 1, 0, .7);
+  }
+
+  #h-input{
+    display: flex;
+    flex-wrap: wrap;
+    border: 2px solid green;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 5px;
+    padding: 4px;
+    width: 305px;
+    min-width:305px;
+    justify-content: center;
+    caret-color: transparent;
+    background-color: chocolate;
+  }
+  
+  .input:focus{
+    background-color: lime;
+  }
+
+  @keyframes example {
+    0%   {margin-right: 5px;}
+    25%  {margin-right: 10px;}
+    50%  {margin-right: 5px;}
+    100% {margin-right: 0px;}
+  }
+  
+  /* The element to apply the animation to */
+.wrong {
+    animation-name: example;
+    animation-duration: 1s;
+  }

@@ -13,7 +13,7 @@ class Wordle:
             t=line.split()
             unsortedwords.append(t[0])
         f.close()
-        self.__wordlist=sorted(unsortedwords);
+        self.__wordlist=sorted(unsortedwords)
 
     def checkWord(self,word):
         for i in self.__wordlist:
@@ -404,10 +404,9 @@ def getClue(goalword,attemptword):
             clue[i]='g'
 
     for i in range(0,5):
-        if clue[i]!='g':
-            for l in goalword:
-                if attemptword[i]==l:
-                    clue[i]='y'
+        for j in range(0,5):
+            if attemptword[i]==goalword[j] and clue[j]!='g':
+                clue[i]='y'
     
     return  ''.join(clue)
 
@@ -472,16 +471,14 @@ if __name__=="__main__":
    #for key,value in letter_dict.items():
    #    print(f'{key}:{value}')
     
-    w.PlayWordle()
-
-    print("Test")
+    #w.PlayWordle()
+    #l=w.getWordList()
+    #r_list=[l[random.randint(0,2000)] for i in range(0,25)]
     #print(w.checkWord('alibi','xgyxx','slate'))
     #print(w.checkWord('alibi','yxxxx','bigot'))
-    print(w.checkWord('couch','yggxx','count'))
-    print(w.checkWord('would','xgyxx','slate'))
-
-
-    print(w.checkWord('alibi','yxxxx','bigot'))
+    print(getClue("arbor","aback"))
+    print(getClue("ablob","abbey"))
+   
 
 
 
