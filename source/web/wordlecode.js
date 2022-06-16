@@ -117,6 +117,7 @@ class Grid{
 grid=new Grid(); // make grid global
 createSquares();
 window.addEventListener('resize', setHeight);
+var currentSquare={"row" :0,"col":0};// to keep track of the square
 
 ///////////////////////////////////////////////////////
 function createSquares(){
@@ -133,8 +134,8 @@ for(let i=0;i<6;i++){
   p.setAttribute("class","input")
   p.setAttribute("name",idStr);
   p.setAttribute("onclick","squareClick(event)")
+  p.setAttribute("style","background-color : #ffffff")
   t.appendChild(p);
- 
 
 
 }
@@ -151,35 +152,28 @@ function squareClick(event){
   event.preventDefault()
   var target=event.target.id;
   console.log(event.target.id+ "was clicked")
-  const re1=/row-[\d]+col-[\d]+/g
-  const re2 =/[\d]+/g
-  //document.getElementById("h-input").focus()
+  const re1=/row-[\d]+col-[\d]+/g //check if one of the square was clicked
+  const re2 =/[\d]+/g // find the row and col from the string
   console.log(event.target);
   console.log(event.target.id)
   if(re1.exec(event.target.id)){
-    var indxs=(event.target.id).match(re2)
-    if (document.getElementById(target).innerHTML==="" || grid.cs.row!=indxs[0]) {
-      return //return if no letter is present
-    }
-    var color=grid.getColor(indxs[0],indxs[1])
-    console.log("the background color was: "+document.getElementById(target).style.backgroundColor)
+    var indxs=(event.target.id).match(re2);
     var colorDef={
-      "w" : "#ffffff",
-      "y" : "#e6b800", //yellow
-      "g" : "#39ac39", //green
-       "x": "#808080"
+      "#ffffff" : "w",
+      "#e6b800" : "y", //yellow
+      "#39ac39" : "g", //green
+      "#808080" :  "x" //gray
     };
 
     var nextColor={ // currentColor : nextColor every click on a letter changes the color of it
-      "w":"y",
-      "y":"g",
-      "g" :"x",
-      "x" :"w"
+      "#ffffff" : "#e6b800",
+      "#e6b800" : "#39ac39", //yellow
+      "#39ac39" : "#808080", //green
+      "#808080" : "#ffffff" //gray
     }
-    var currentColor=grid.getColor(indxs[0],indxs[1])
-    grid.setColor(indxs[0],indxs[1],nextColor[currentColor]);
-    console.log("CurrentGridColor"+currentColor)
-    document.getElementById(event.target.id).style.backgroundColor=colorDef[nextColor[currentColor]];
+    console.log("color="+document.getElementById(event.target.id).style.backgroundColor)
+    var newColor=nextColor[document.getElementById(event.target.id).style.backgroundColor]
+    document.getElementById(event.target.id).style.backgroundColor="#808080";
     
 
     }
@@ -208,15 +202,7 @@ document.addEventListener("keyup",(event)=>{
   }*/
   if (name==="Backspace")
   {
-    //document.getElementById(grid.getCurrentId()).setAttribute("class","input")
-     // document.getElementById(grid.getCurrentId()).setAttribute("class","next-elem")
-
-    document.getElementById(grid.getCurrentId()).innerHTML="";
-    document.getElementById(grid.getCurrentId()).style.backgroundColor="white";
-    grid.removeLetter()
-    for(let k=0;k<5;k++){
-      document.getElementById(grid.getId(grid.cs.row,k)).style.animationName="";
-    }
+   deleteSquare();
   }
   else if(name==="Enter")
   {
@@ -247,15 +233,60 @@ document.addEventListener("keydown",(event)=>{
   document.getElementById("h-input").focus()
 },false)
 
-function gotFocus(event){
-  console.log("got focus:"+event.target.id)
-  //document.getElementById(event.target.id).removeAttribute("readonly");
+function fillSquare(letter){
+    // this function runs if any valid letter is pressed
+    var idStr="row-" + currentSquare.row + "col-" + currentSquare.col;
+    var elem=document.getElementById(idStr);
+    
+
+    if (currentSquare.col<4)
+    {
+      elem.innerHTML=letter;
+      currentSquare.col+=1;
+    }
+    else if (currentSquare.col==4 && currentSquare.row<5)
+    {
+      elem.innerHTML=letter;
+      currentSquare.col=0;
+      currentSquare.row+=1;
+    }
+    else
+    {
+      elem.innerHTML=letter;
+    }
+    document.getElementById(idStr).setAttribute("class","input")
+    idStr="row-" + currentSquare.row + "col-" + currentSquare.col;
+    document.getElementById(idStr).setAttribute("class","current-input")
+
+
 }
 
-function lostFocus(event){
-  console.log("lost focus:"+event.target.id)
- // document.getElementById(event.target.id).setAttribute("readonly",true)
+function deleteSquare(){
+  var idStr="row-" + currentSquare.row + "col-" + currentSquare.col;
+  var elem=document.getElementById(idStr);
+  document.getElementById(idStr).setAttribute("class","input")
+  if (currentSquare.col!=0)
+  {
+    currentSquare.col-=1;
+    elem.innerHTML="";
+  }
+  else if (currentSquare.row!=0)
+  {
+    currentSquare.row-=1;
+    currentSquare.col=4;
+    elem.innerHTML="";
+  }
+  else
+  {
+    elem.innerHTML="";
+  }
+  idStr="row-" + currentSquare.row + "col-" + currentSquare.col;
+  document.getElementById(idStr).setAttribute("class","current-input");
+
+
 }
+
+
 
 var isIgnore=false;
 function dofunction(){
@@ -267,10 +298,11 @@ function dofunction(){
   const re=/^[A-Z]$|^[a-z]$/
 
   if (re.exec(val)){
-  document.getElementById(grid.getCurrentId()).innerHTML=val.toUpperCase();
+  /*document.getElementById(grid.getCurrentId()).innerHTML=val.toUpperCase();
   /*document.getElementById(grid.getCurrentId()).setAttribute("class","next-elem")
   document.getElementById(grid.getCurrentId()).setAttribute("class","input")*/
-  grid.addLetter(val.toLowerCase());
+  /*grid.addLetter(val.toLowerCase());*/
+  fillSquare(val.toUpperCase());
   
   }
   document.getElementById("h-input").value="";
