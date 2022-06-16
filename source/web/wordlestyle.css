@@ -34,7 +34,7 @@
     display: grid;
     width:75%;
     max-width: 400px;
-    min-width: 250px;
+    min-width: 100px;
 
     border: 2px solid green;
     margin-left:auto;
