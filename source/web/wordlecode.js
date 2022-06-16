@@ -1,6 +1,5 @@
 
 // adjust size
-var height=window.innerHeight;
 
 class Grid{
   constructor(id){
@@ -117,9 +116,7 @@ class Grid{
 
 grid=new Grid(); // make grid global
 createSquares();
-var x=window.innerWidth
-var y=window.innerHeight
-document.getElementById("size").innerHTML="width: "+x+ " height:"+y;
+window.addEventListener('resize', setHeight);
 
 ///////////////////////////////////////////////////////
 function createSquares(){
@@ -129,31 +126,21 @@ for(let i=0;i<6;i++){
 {
   var idStr="row-"+i+"col-"+j;
   grid.setId(i,j,idStr);
-  //grid[i][j]=new square(idStr);
   var p=document.createElement("div");
   var id=document.createAttribute("id");
 
   p.setAttribute("id",idStr);
   p.setAttribute("class","input")
   p.setAttribute("name",idStr);
- // p.setAttribute("tabindex","-1")
-  //p.setAttribute("readonly",true)
-  if(i==0){
-   // p.removeAttribute("readonly")
-   // p.setAttribute("autofocus","true")
-  }
-  //p.setAttribute("inputmode","text");
-  //p.setAttribute("type","text");
-  //p.setAttribute("maxlength","1")
   p.setAttribute("onclick","squareClick(event)")
-  //p.setAttribute("onfocus","gotFocus(event)");
-  //p.setAttribute("onblur","lostFocus(event)");
- // p.setAttribute("onkeyup","keypressed(event)")
   t.appendChild(p);
+ 
+
 
 }
 
 }
+setHeight();
 }
 
 function isValidElement(){
@@ -296,7 +283,21 @@ function render(){
 
 }
 
+function setHeight(){
+  for(let i=0;i<6;i++){
+    for(let j=0;j<5;j++)
+  {
+    var idStr="row-"+i+"col-"+j;
+    var elem=document.getElementById(idStr);
+    var e_style=getComputedStyle(elem);
+    elem.style.height=e_style.width;
 
+ }
+}
+var x=window.innerWidth
+var y=window.innerHeight
+document.getElementById("size").innerHTML="width: "+x+ " height:"+y;
+}
 
 
 /////////////////////WORDLE FUNCTIONS////////////
@@ -336,6 +337,8 @@ function getPossibleWords(wordList,clue,clueword)
   return sol_list
 
 }
+
+
 
 
 

@@ -17,6 +17,7 @@
 
   html {
     box-sizing:border-box;
+    font-size: 40px;
   }
   *, *::before, *::after{
     box-sizing: inherit;
@@ -31,27 +32,30 @@
   }
   .rel {
     display: grid;
-    width:270px;
+    width:75%;
+    max-width: 400px;
+    min-width: 250px;
 
     border: 2px solid green;
     margin-left:auto;
     margin-right:auto;
     margin-top:5px;
     padding:4px;
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
-    grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: repeat(5,1fr) ;
+    grid-template-rows: repeat(5,1fr) ;
+    font-size: 10vh;
 
   }
   
   .rel > .input {
     border: 1px solid blue;
-    width: 50px;
-    height: 50px;
+    /*width: 50px;*/
+    /*height: 100vw;*/
     margin: 0px 0px 1px 1px;
     padding: 2px;
     text-align: center;
     /*line-height: 50px;*/
-    font-size: 40px;
+    font-size: inherit;
     caret-color: transparent;
     cursor: default;
     -moz-user-select: none;
