@@ -157,23 +157,27 @@ function squareClick(event){
   console.log(event.target);
   console.log(event.target.id)
   if(re1.exec(event.target.id)){
-    var indxs=(event.target.id).match(re2);
+    var indxs=(event.target.id).match(re2); // get row and column from grid
+    var currentColor=grid.getColor(indxs[0],indxs[1]);
+
     var colorDef={
-      "#ffffff" : "w",
-      "#e6b800" : "y", //yellow
-      "#39ac39" : "g", //green
-      "#808080" :  "x" //gray
+      "w" : "#ffffff",
+      "y" : "#e6b800", //yellow
+      "g" : "#39ac39", //green
+      "x" : "#808080"  //gray
     };
 
     var nextColor={ // currentColor : nextColor every click on a letter changes the color of it
-      "#ffffff" : "#e6b800",
-      "#e6b800" : "#39ac39", //yellow
-      "#39ac39" : "#808080", //green
-      "#808080" : "#ffffff" //gray
+      "w" : "y",
+      "y" : "g",
+      "g" : "x",
+      "x" : "w"
     }
-    console.log("color="+document.getElementById(event.target.id).style.backgroundColor)
-    var newColor=nextColor[document.getElementById(event.target.id).style.backgroundColor]
-    document.getElementById(event.target.id).style.backgroundColor="#808080";
+
+    var newColor=nextColor[currentColor];
+    grid.setColor(indxs[0],indxs[1],newColor);
+    // check if color is rgb
+    document.getElementById(event.target.id).style.backgroundColor=colorDef[newColor];
     
 
     }
