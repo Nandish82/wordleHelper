@@ -3,6 +3,12 @@
 
 class Grid{
   constructor(id){
+    this.colorDef={
+      "w" : "#ffffff",
+      "y" : "#e6b800", //yellow
+      "g" : "#39ac39", //green
+      "x" : "#808080"  //gray
+    };
     this.element=[]
     this.words=[];
     this.clues=[];
@@ -13,8 +19,10 @@ class Grid{
       for(let j=0;j<5;j++)
       {
         this.element[i][j]={"id":"","color":"w","letter":""}
+        this.element[i][j].id="row-"+i+"col-"+j;
       }
     }
+    
   }
      getId(row,col){
       return this.element[row][col].id;
@@ -37,58 +45,100 @@ class Grid{
     setId(row,col,id){
       this.element[row][col].id=id;
     }
-     setColor(row,col,color){
-      this.element[row][col].color=color;
+    changeColor(row,col){
+
+      var currentColor=this.getColor(row,col);
+  
+      var nextColor={ // currentColor : nextColor every click on a letter changes the color of it
+        "w" : "y",
+        "y" : "g",
+        "g" : "x",
+        "x" : "w"
+      }
+      var newColor=nextColor[currentColor];
+      this.element[row][col].color=newColor;
+      document.getElementById(this.getId(row,col)).style.backgroundColor=this.colorDef[newColor];
+      this.isRowValid(row);
+   
     }
-      addLetter(letter){
-          if (this.cs.row<6 && this.cs.col<5)
-          { 
-            
-            this.element[this.cs.row][this.cs.col].letter=letter;
-            //document.getElementById(this.element[this.cs.row][this.cs.col].id).innerHTML=letter.toUpperCase();
-            this.setNextSquare(1)
-            
-          }
+    addLetter(letter){
+      var currentId=this.getId(this.cs.row,this.cs.col);
+      document.getElementById(currentId).innerHTML=letter;
+      this.element[this.cs.row][this.cs.col].letter=letter;
+
+      if (this.cs.col<4)
+      {
+        this.cs.col+=1;
+      }
+      else if (this.cs.col==4 && this.cs.row<5)
+      {
+        this.cs.col=0;
+        this.cs.row+=1;
+      }
+      else
+      {
+        
+      }
+      document.getElementById(currentId).setAttribute("class","input")
+      var idStr="row-" + this.cs.row + "col-" + this.cs.col;
+      document.getElementById(idStr).setAttribute("class","current-input")
+      this.isRowValid(this.cs.row);
           
+    }
+    removeLetter(){
+      var idStr=this.getId(this.cs.row,this.cs.col);
+      console.log(idStr)
+      var elem=document.getElementById(idStr);
+      console.log(elem)
+      document.getElementById(idStr).setAttribute("class","input")
+      if (this.cs.col!=0)
+      {
+        this.cs.col-=1;
       }
-      removeLetter(){
-        this.element[this.cs.row][this.cs.col].letter="";
-        this.setNextSquare(-1)        
+      else if (this.cs.row!=0)
+      {
+        this.cs.row-=1;
+        this.cs.col=4;
       }
-      setNextSquare(dir){
-        //var nextSq=this.cs.row*5+this.cs.col; //current sq
-        var nextSq=this.cs.col;
-
-        if (dir==1)
-        {
-          if(this.cs.col<4)
-            this.cs.col+=1;
-        }
-
-        if(dir==-1){
-          if(this.cs.col>0)
-          {
-            this.cs.col-=1;
-          }
-        }
+      else
+      {
       }
-      isRowValid(){
+      this.element[this.cs.row][this.cs.col].letter="";
+      document.getElementById(this.getId(this.cs.row,this.cs.col)).innerHTML="";
+      idStr="row-" + this.cs.row + "col-" + this.cs.col;
+      document.getElementById(idStr).setAttribute("class","current-input");   
+      this.isRowValid(this.cs.row);
+    }
+      isRowValid(row){
+        //return 1x5 of boolean values indicating if a row is valid or no
         var flag=true;
-        for(let j=0;j<5;j++){
-          var color=this.element[this.cs.row][j].color;
-          var letter=this.element[this.cs.row][j].letter;
-          flag=flag && (color != 'w' && letter.length>0)
-        }
-        return flag
+          for(let j=0;j<5;j++){
+            var color=this.element[row][j].color;
+            var letter=this.element[row][j].letter;
+            flag=flag && (color != 'w' && letter.length>0)
+          }
+
+          // if there is no letter in a row and there is no colour the grid becoms grey
+          var isNoLetter=true;
+          for(let j=0;j<5;j++)
+            isNoLetter=isNoLetter && this.element[row][j].letter==="";
+
+          if(isNoLetter){
+            document.getElementById("status-row-"+row).style.backgroundColor="gray";
+            return;
+          }
+       
+      
+          if (flag===true){
+            document.getElementById("status-row-"+row).style.backgroundColor="green";
+          }
+          else
+          {
+            document.getElementById("status-row-"+row).style.backgroundColor="red";
+          }
+        return flag;
       }
-      setNextRow(){
-        if (this.cs.row<5)
-        {
-          this.cs.row+=1
-          this.cs.col=0
-        }
-          
-      }
+
       validateWordClue(){
         if(this.isRowValid()){
           var word=this.element[this.cs.row].reduce(
@@ -114,35 +164,28 @@ class Grid{
 
   ///////////////////start////////////////////////////////////////
 
+  window.onload = function() {
+    
 grid=new Grid(); // make grid global
-createSquares();
+
+manipdom.createWordleGrid(grid);
+manipdom.createKeyBoard();
+manipdom.createAnalysisOuter();
+manipdom.createRowAnalysis();
+manipdom.createRowAnalysis("SPELL","xxxgy","89","30","4",grid.colorDef);
+
+console.log(solve.getListWords())
+  }
 window.addEventListener('resize', setHeight);
 var currentSquare={"row" :0,"col":0};// to keep track of the square
-
-///////////////////////////////////////////////////////
-function createSquares(){
-    var t=document.getElementById("grid_container");
-for(let i=0;i<6;i++){
-  for(let j=0;j<5;j++)
-{
-  var idStr="row-"+i+"col-"+j;
-  grid.setId(i,j,idStr);
-  var p=document.createElement("div");
-  var id=document.createAttribute("id");
-
-  p.setAttribute("id",idStr);
-  p.setAttribute("class","input")
-  p.setAttribute("name",idStr);
-  p.setAttribute("onclick","squareClick(event)")
-  p.setAttribute("style","background-color : #ffffff")
-  t.appendChild(p);
+var x=window.innerWidth
+var y=window.innerHeight
+//document.getElementById("size").innerHTML="width: "+x+ " height:"+y;
 
 
-}
 
-}
-setHeight();
-}
+
+
 
 function isValidElement(){
 
@@ -151,37 +194,16 @@ function isValidElement(){
 function squareClick(event){
   event.preventDefault()
   var target=event.target.id;
-  console.log(event.target.id+ "was clicked")
   const re1=/row-[\d]+col-[\d]+/g //check if one of the square was clicked
   const re2 =/[\d]+/g // find the row and col from the string
   console.log(event.target);
   console.log(event.target.id)
   if(re1.exec(event.target.id)){
     var indxs=(event.target.id).match(re2); // get row and column from grid
-    var currentColor=grid.getColor(indxs[0],indxs[1]);
-
-    var colorDef={
-      "w" : "#ffffff",
-      "y" : "#e6b800", //yellow
-      "g" : "#39ac39", //green
-      "x" : "#808080"  //gray
-    };
-
-    var nextColor={ // currentColor : nextColor every click on a letter changes the color of it
-      "w" : "y",
-      "y" : "g",
-      "g" : "x",
-      "x" : "w"
-    }
-
-    var newColor=nextColor[currentColor];
-    grid.setColor(indxs[0],indxs[1],newColor);
-    // check if color is rgb
-    document.getElementById(event.target.id).style.backgroundColor=colorDef[newColor];
-    
+    grid.changeColor(indxs[0],indxs[1]);
 
     }
-    //document.getElementById(grid.getCurrentId()).focus(); //get focus back even after click
+   
 }
 function makeReadOnly(){
       for(let j=0;j<5;j++)
@@ -194,146 +216,120 @@ document.addEventListener("keyup",(event)=>{
   var name = event.key;
   var code = event.code;
   event.preventDefault();
-  //check code
-  const re=/^[A-Z]$|^[a-z]$/
- /* if (re.exec(t))
-  {
-    //document.getElementById(grid.getCurrentId()).value=name.toUpperCase();
-    document.getElementById(grid.getCurrentId()).innerHTML=name.toUpperCase();
-    grid.addLetter(name);
-    grid.setNextSquare(1);
-    document.getElementById(grid.getCurrentId()).focus()
-  }*/
-  if (name==="Backspace")
-  {
-   deleteSquare();
-  }
-  else if(name==="Enter")
-  {
-    if  (grid.validateWordClue()){
-      makeReadOnly();
-      console.log("word registered:"+grid.words)
-      console.log("word registered:"+grid.clues)
-      grid.setNextRow()
-    }
-    else
-    {
-      for(let k=0;k<5;k++){
-        document.getElementById(grid.getId(grid.cs.row,k)).style.animationName="example";
-      }
-    }
-  }
-  else
-  {
 
-  }
+ checkKeyDown(name);
 
  
 
 
 },false);
 
-document.addEventListener("keydown",(event)=>{
-  document.getElementById("h-input").focus()
-},false)
+function checkKeyDown(keyPressed)
+{
+  const re=/^[A-Z]$|^[a-z]$/;
+  if (re.exec(keyPressed)){
+    fillSquare(keyPressed.toUpperCase());
+    }
+
+
+  if(keyPressed==="Backspace"){
+    deleteSquare();
+  }
+}
+
+
 
 function fillSquare(letter){
     // this function runs if any valid letter is pressed
-    var idStr="row-" + currentSquare.row + "col-" + currentSquare.col;
-    var elem=document.getElementById(idStr);
-    
-
-    if (currentSquare.col<4)
-    {
-      elem.innerHTML=letter;
-      currentSquare.col+=1;
-    }
-    else if (currentSquare.col==4 && currentSquare.row<5)
-    {
-      elem.innerHTML=letter;
-      currentSquare.col=0;
-      currentSquare.row+=1;
-    }
-    else
-    {
-      elem.innerHTML=letter;
-    }
-    document.getElementById(idStr).setAttribute("class","input")
-    idStr="row-" + currentSquare.row + "col-" + currentSquare.col;
-    document.getElementById(idStr).setAttribute("class","current-input")
-
-
+    grid.addLetter(letter);
 }
 
 function deleteSquare(){
-  var idStr="row-" + currentSquare.row + "col-" + currentSquare.col;
-  var elem=document.getElementById(idStr);
-  document.getElementById(idStr).setAttribute("class","input")
-  if (currentSquare.col!=0)
-  {
-    currentSquare.col-=1;
-    elem.innerHTML="";
-  }
-  else if (currentSquare.row!=0)
-  {
-    currentSquare.row-=1;
-    currentSquare.col=4;
-    elem.innerHTML="";
-  }
-  else
-  {
-    elem.innerHTML="";
-  }
-  idStr="row-" + currentSquare.row + "col-" + currentSquare.col;
-  document.getElementById(idStr).setAttribute("class","current-input");
-
-
+  grid.removeLetter();
 }
 
 
 
-var isIgnore=false;
-function dofunction(){
-  if (isIgnore)
-  return
-  isIgnore=true
-  console.log("registered an event")
-  var val=document.getElementById("h-input").value
-  const re=/^[A-Z]$|^[a-z]$/
 
-  if (re.exec(val)){
-  /*document.getElementById(grid.getCurrentId()).innerHTML=val.toUpperCase();
-  /*document.getElementById(grid.getCurrentId()).setAttribute("class","next-elem")
-  document.getElementById(grid.getCurrentId()).setAttribute("class","input")*/
-  /*grid.addLetter(val.toLowerCase());*/
-  fillSquare(val.toUpperCase());
-  
+
+
+function VirtualKeyboardClick(e){
+  var keyClicked=e.target.id;
+  var key=keyClicked.slice(4,);
+  if (key==="BackSpace"){
+    grid.removeLetter();
   }
-  document.getElementById("h-input").value="";
-  isIgnore=false
-
-
+  else if (key==="Enter")
+  {
+    //manipdom.removeKeyBoard();
+  }
+  else
+  {
+    grid.addLetter(key.toUpperCase());
+  }
+  console.log(key + " was pressed on VKby")
 }
 
 function render(){
 
 }
 
-function setHeight(){
-  for(let i=0;i<6;i++){
-    for(let j=0;j<5;j++)
-  {
-    var idStr="row-"+i+"col-"+j;
-    var elem=document.getElementById(idStr);
+function calcHeight(id){
+    var elem=document.getElementById(id);
     var e_style=getComputedStyle(elem);
-    elem.style.height=e_style.width;
+    return e_style.width;
+  }
 
- }
+  function setHeight(){
+    for(let i=0;i<6;i++){
+    for(let j=0;j<5;j++){
+        document.getElementById(grid.getId(i,j)).style.height=calcHeight(grid.getId(i,j));;
+
+      }
+    }
+  }
+
+
+  function buildKeyboard()
+{
+  var t=document.getElementById("key-container");
+  var keyboardLetter=[['Q','W','E','R','T','Y','U','I','O','P'],
+                        ['A','S','D','F','G','H','J','K','L'],
+                        ['Enter','Z','X','C','V','B','N','M','BackSpace']];
+  var classNames=["key-container-row-1","key-container-row-2","key-container-row-3"]
+
+  for(let i=0;i<classNames.length;i++){
+    var cElem=document.createElement("div")
+    cElem.setAttribute("class",classNames[i])
+    cElem.setAttribute("id","keys-row-"+(i+1))
+    for(let j=0;j<keyboardLetter[i].length;j++){
+      var idStr="key-"+keyboardLetter[i][j];
+      var p=document.createElement("button");
+      var id=document.createAttribute("id");
+      p.innerHTML=keyboardLetter[i][j];
+      p.setAttribute("class","key")
+      p.setAttribute("id",idStr);
+      p.setAttribute("onclick","VirtualKeyboardClick(event)")
+      if (keyboardLetter[i][j]==='Enter'){
+        p.setAttribute("class","key Enter")
+      }
+      if(keyboardLetter[i][j]==='BackSpace')
+      {
+        p.setAttribute("class","key BackSpace")
+        p.innerHTML="";
+      }
+      
+      
+      cElem.appendChild(p);
+  }
+  t.appendChild(cElem);
 }
-var x=window.innerWidth
-var y=window.innerHeight
-document.getElementById("size").innerHTML="width: "+x+ " height:"+y;
-}
+
+  
+  
+  }
+  
+  
 
 
 /////////////////////WORDLE FUNCTIONS////////////
@@ -380,7 +376,9 @@ function getPossibleWords(wordList,clue,clueword)
 
 
 
+
 function getWords(){
+  
 
 
 var words=[
