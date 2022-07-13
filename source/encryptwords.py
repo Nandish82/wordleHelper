@@ -11,8 +11,9 @@ def decrypt_word(base64_message):
     message_bytes=base64.b64decode(base64_bytes)
     message=message_bytes.decode('ascii')
 # encoding
-f=open('wordlewords.txt','r')
-f2=open('encryptwords.txt','w')
+
+f=open('wordle-nyt-allowed-guesses.txt','r')
+f2=open('encrypted-allowed-guesses.txt','w')
 for line in f:
     t=line.split()
     word_encrypt=encrypt_word(t[0])
